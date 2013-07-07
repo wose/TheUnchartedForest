@@ -10,11 +10,6 @@ class CCamera
   ~CCamera();
 
  private:
-  float m_fFieldOfView;
-  float m_fAspectRatio;
-  float m_fNearPlane;
-  float m_fFarPlane;
-
   float m_fVertAngle;
   float m_fHorzAngle;
 

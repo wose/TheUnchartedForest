@@ -13,19 +13,21 @@
 #include "console.h"
 #include "shader.h"
 
-CConsole::CConsole() :
+CConsole::CConsole(unsigned int nHeight, unsigned int nWidth) :
   m_bVisible(false),
   m_bGlow(false),
+  m_nHeight(nHeight/2),
+  m_nWidth(nWidth),
   m_vFontColor(0.9f, 0.9f, 0.9f, 1.0f),
   m_vBackgroundColor(0.1f, 0.1f, 0.1f, 0.7f),
   m_Font("Inconsolata", 18),
   m_fCursorX(16.0),
-  m_fCursorY(530.0),
+  m_fCursorY(nHeight/2 - 20),
   m_nFontSize(18)
 {
-  m_matOrtho = glm::ortho( 0.0f, 1920.0f, 1080.0f, 0.0f, -1.0f, 1.0f);
+  m_matOrtho = glm::ortho( 0.0f, (float)nWidth, (float)nHeight, 0.0f, -1.0f, 1.0f);
 
-  glGenVertexArrays(1, &m_nVAO); 
+  glGenVertexArrays(1, &m_nVAO);
   glBindVertexArray(m_nVAO);
 
   glGenBuffers(1, &m_nVBO);
@@ -39,13 +41,14 @@ CConsole::CConsole() :
                     (float)glyph.xoffset / 55 * 18 + (float)glyph.width / 55 * 18, - (float)glyph.yoffset / 55 * 18 +(float)glyph.height / 55 * 18, 0, 0, 0
   };
 
-
-  float background[] = { 0,    0,      0, 0, 0,
-                         0,    1080/2, 0, 0, 0,
-                         1920, 1080/2, 0, 0, 0,
-                         0,    0,      0, 0, 0,
-                         1920, 1080/2, 0, 0, 0,
-                         1920, 0,      0, 0, 0
+  float fHeight = (float)m_nHeight;
+  float fWidth  = (float)m_nWidth;
+  float background[] = { 0,       0,        0, 0, 0,
+                         0,       fHeight,  0, 0, 0,
+                         fWidth,  fHeight,  0, 0, 0,
+                         0,       0,        0, 0, 0,
+                         fWidth,  fHeight,  0, 0, 0,
+                         fWidth,  0,        0, 0, 0
   };
 
   glBindBuffer(GL_ARRAY_BUFFER, m_nVBO);
@@ -55,11 +58,11 @@ CConsole::CConsole() :
   glBufferSubData(GL_ARRAY_BUFFER, 30 * sizeof(float), 30 * sizeof(float), background);
   //  glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  //  glGenVertexArrays(1, &m_nVAO); 
+  //  glGenVertexArrays(1, &m_nVAO);
   //  glBindVertexArray(m_nVAO);
 
   //  glBindBuffer(GL_ARRAY_BUFFER, m_nVBO);
- 
+
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
   glVertexAttribPointer((GLuint)0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), 0);
@@ -75,7 +78,7 @@ CConsole::~CConsole()
 void CConsole::ResetCursor()
 {
   m_fCursorX = 16.0;
-  m_fCursorY = 530.0;
+  m_fCursorY = m_nHeight - 20;
 }
 
 void CConsole::AddLineFormat(const char *cFmt, ...)
@@ -110,7 +113,7 @@ void CConsole::AddChar(const char cChar)
           fVertR, fVertB, 0.0, fTexR, fTexB
         };
       m_vVertexData.insert(m_vVertexData.end(), aVertexData, aVertexData + 30);
-      
+
       glBindBuffer(GL_ARRAY_BUFFER, m_nVBO);
       glBufferSubData(GL_ARRAY_BUFFER, (m_vVertexData.size() + 30) * sizeof(float),
                       30 * sizeof(float), aVertexData);
@@ -127,8 +130,10 @@ void CConsole::Invalidate()
 
   m_fCursorX = 16.0;
   m_fCursorY = 20.0;
+  int nOutputLines = (m_nHeight - 40) / 20;
 
-  auto it = m_vOutput.size() >= 25 ? m_vOutput.end() - 25 : m_vOutput.begin();
+  auto it = m_vOutput.size() >= nOutputLines ?
+            m_vOutput.end() - nOutputLines : m_vOutput.begin();
 
   for(; it != m_vOutput.end(); ++it)
     {
@@ -141,7 +146,7 @@ void CConsole::Invalidate()
     }
 
   m_fCursorX = 16.0;
-  m_fCursorY = 530.0;
+  m_fCursorY = m_nHeight - 20;
   if(m_strCommand.size() > 0)
     for(char &c : m_strCommand)
       {
@@ -194,7 +199,7 @@ bool CConsole::Enter()
       std::cout << m_strCommand << std::endl;
       //      ResetCursor();
       Invalidate();
-      
+
       return true;
     }
   else

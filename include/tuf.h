@@ -23,6 +23,7 @@ class CTUF
 
  private:
   bool m_bQuit;
+  bool m_bFullScreen;
   std::map<std::string, CShader> m_mapShader;
   std::vector<CMesh> m_vObjects;
 
@@ -66,7 +67,7 @@ class CTUF
  public:
   bool Initialize();
   void Run();
-  
+
 };
 
 extern CTUF theApp;

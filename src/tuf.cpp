@@ -22,8 +22,9 @@ CTUF theApp;
 
 CTUF::CTUF() :
   m_bQuit(false),
-  m_nWindowWidth(1920),
-  m_nWindowHeight(1080),
+  m_bFullScreen(false),
+  m_nWindowWidth(1024),
+  m_nWindowHeight(768),
   m_fzNear(1.0),
   m_fzFar(10.0),
   m_fFrustumScale(1.0),
@@ -71,11 +72,16 @@ bool CTUF::InitSDL()
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
+  uint32_t nSDLFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
+  if(m_bFullScreen)
+  {
+    // TODO set width and height to screen resolution
+    nSDLFlags |= SDL_WINDOW_FULLSCREEN;
+  }
+
   m_pMainWindow = SDL_CreateWindow(PROGRAM_NAME, SDL_WINDOWPOS_CENTERED,
-                                   SDL_WINDOWPOS_CENTERED, m_nWindowWidth, m_nWindowHeight,
-                                   SDL_WINDOW_OPENGL |
-                                   SDL_WINDOW_FULLSCREEN |
-                                   SDL_WINDOW_RESIZABLE);
+                                   SDL_WINDOWPOS_CENTERED, m_nWindowWidth,
+                                   m_nWindowHeight, nSDLFlags);
 
   if(!m_pMainWindow)
     Die("Unable to create window");
@@ -163,7 +169,7 @@ bool CTUF::InitMap()
 {
   m_vObjects.push_back(CMesh("foo"));
 
-  m_pConsole = new CConsole();
+  m_pConsole = new CConsole(m_nWindowHeight, m_nWindowWidth);
 
   return true;
 }

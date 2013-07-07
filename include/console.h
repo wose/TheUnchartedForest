@@ -20,12 +20,15 @@ class CShader;
 class CConsole
 {
  public:
-  CConsole();
+  CConsole(unsigned int nHeight, unsigned int nWidth);
   ~CConsole();
 
  private:
   bool m_bVisible;
   bool m_bGlow;
+
+  unsigned int m_nWidth;
+  unsigned int m_nHeight;
   CSDFFont m_Font;
 
   glm::mat4 m_matOrtho;
