@@ -4,13 +4,12 @@
 #ifndef GL3_PROTOTYPES
 #define GL3_PROTOTYPES
 #endif
-#include <GL3/gl3.h>
+#include "GL3/gl3.h"
 
 #include <vector>
-#include <glm/gml.hpp>
+#include <glm/glm.hpp>
 
 #include "guielement.h"
-#include 
 
 class CGUI
 {
@@ -19,7 +18,7 @@ class CGUI
   ~CGUI();
 
  private:
-  std::vector<CGUIElement> m_vGuiElements;
+  std::vector<CGUIElement*> m_vGuiElements;
   GLuint m_nVBO;
   GLuint m_nVAO;
   CTexture m_Texture;

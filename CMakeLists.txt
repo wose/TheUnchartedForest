@@ -36,6 +36,9 @@ set(SMDHDR
 set(SRC
   src/camera.cpp
   src/console.cpp
+  src/gui.cpp
+  src/guibar.cpp
+  src/guielement.cpp
   src/main.cpp
   src/mesh.cpp
   src/sdffont.cpp
@@ -48,6 +51,9 @@ set(SRC
 set(HDR
   include/camera.h
   include/console.h
+  include/gui.h
+  include/guibar.h
+  include/guielement.h
   include/mesh.h
   include/sdffont.h
   include/shader.h

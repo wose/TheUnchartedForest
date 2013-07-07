@@ -7,4 +7,3 @@ CGUIElement::CGUIElement()
 CGUIElement::~CGUIElement()
 {
 }
-

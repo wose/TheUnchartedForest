@@ -124,6 +124,32 @@ void CConsole::AddChar(const char cChar)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void CConsole::Resize(unsigned int nWidth, unsigned int nHeight)
+{
+  m_matOrtho = glm::ortho( 0.0f, (float)nWidth, (float)nHeight, 0.0f, -1.0f, 1.0f);
+
+  m_nWidth  = nWidth;
+  m_nHeight = nHeight / 2;
+  std::cout << "console resize " << m_nWidth << "x" << m_nHeight << std::endl;
+
+  float fHeight = (float)m_nHeight;
+  float fWidth  = (float)m_nWidth;
+  float background[] = { 0,       0,        0, 0, 0,
+                         0,       fHeight,  0, 0, 0,
+                         fWidth,  fHeight,  0, 0, 0,
+                         0,       0,        0, 0, 0,
+                         fWidth,  fHeight,  0, 0, 0,
+                         fWidth,  0,        0, 0, 0
+  };
+
+  glBindBuffer(GL_ARRAY_BUFFER, m_nVBO);
+  glBufferSubData(GL_ARRAY_BUFFER, 30 * sizeof(float), 30 * sizeof(float),
+    background);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  Invalidate();
+}
+
 void CConsole::Invalidate()
 {
   m_vVertexData.clear();

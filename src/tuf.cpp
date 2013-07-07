@@ -23,6 +23,8 @@ CTUF theApp;
 CTUF::CTUF() :
   m_bQuit(false),
   m_bFullScreen(false),
+  m_bVisible(true),
+  m_bHasFocus(true),
   m_nWindowWidth(1024),
   m_nWindowHeight(768),
   m_fzNear(1.0),
@@ -174,6 +176,20 @@ bool CTUF::InitMap()
   return true;
 }
 
+void CTUF::OnResize(unsigned int nWidth, unsigned int nHeight)
+{
+  std::cout << "OnResize(" << nWidth << ", " << nHeight << ")" << std::endl;
+  glViewport(0, 0, nWidth, nHeight);
+  //SDL_SetWindowSize(m_pMainWindow, nWidth, nHeight);
+  m_nWindowWidth  = nWidth;
+  m_nWindowHeight = nHeight;
+  float fAspectRatio = (float)m_nWindowWidth/m_nWindowHeight;
+
+  m_matProjection = glm::perspective(45.0f, fAspectRatio, 0.1f, 100.0f);
+  if(m_pConsole)
+    m_pConsole->Resize(nWidth, nHeight);
+}
+
 void CTUF::TearDown()
 {
   if(m_pConsole)
@@ -195,9 +211,26 @@ void CTUF::HandleEvents()
     {
       switch(event.type)
         {
+        case SDL_WINDOWEVENT:
+          switch(event.window.event)
+          {
+            case SDL_WINDOWEVENT_FOCUS_GAINED:
+              m_bHasFocus = true;
+              break;
+            case SDL_WINDOWEVENT_FOCUS_LOST:
+              m_bHasFocus = false;
+              break;
+            case SDL_WINDOWEVENT_RESIZED:
+              OnResize(event.window.data1, event.window.data2);
+              break;
+          }
+          break;
         case SDL_MOUSEMOTION:
-          m_Cam.RotateUp(m_fElapsedSeconds * MAX_SPEED * 10 * event.motion.yrel);
-          m_Cam.RotateRight(m_fElapsedSeconds * MAX_SPEED * 10 * event.motion.xrel);
+          if(m_bHasFocus and !m_pConsole->IsVisible())
+          {
+            m_Cam.RotateUp(m_fElapsedSeconds * MAX_SPEED * 10 * event.motion.yrel);
+            m_Cam.RotateRight(m_fElapsedSeconds * MAX_SPEED * 10 * event.motion.xrel);
+          }
           break;
         case SDL_TEXTINPUT:
           if(m_pConsole->HandleText(*event.text.text))
@@ -250,7 +283,7 @@ void CTUF::HandleEvents()
         }
     }
 
-  if(!m_pConsole->IsVisible())
+  if(!m_pConsole->IsVisible() and m_bHasFocus)
     {
       Uint8 *aKeyState = SDL_GetKeyboardState(nullptr);
 

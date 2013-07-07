@@ -24,6 +24,8 @@ class CTUF
  private:
   bool m_bQuit;
   bool m_bFullScreen;
+  bool m_bVisible;
+  bool m_bHasFocus;
   std::map<std::string, CShader> m_mapShader;
   std::vector<CMesh> m_vObjects;
 
@@ -58,6 +60,7 @@ class CTUF
   bool InitViewPort();
   bool InitMap();
 
+  void OnResize(unsigned int nWidth, unsigned int nHeight);
   void TearDown();
 
   void HandleEvents();

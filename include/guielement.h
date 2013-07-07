@@ -26,8 +26,8 @@ class CGUIElement
   unsigned int m_nVertexOffset;
 
  public:
-  virtual unsigned int Init(const GLuint nVBO, const unsigned int nVertexOffset);
-  virtual void Draw();
+  virtual unsigned int Init(const GLuint nVBO, const unsigned int nVertexOffset) = 0;
+  virtual void Draw() = 0;
   bool IsVisible() { return m_bVisible; }
 };
 

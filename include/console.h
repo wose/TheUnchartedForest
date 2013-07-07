@@ -57,6 +57,7 @@ class CConsole
   void AddChar(const char cChar);
 
  public:
+  void Resize(unsigned int nWidth, unsigned int nHeight);
   void Invalidate();
   bool HandleText(const char cChar);
   bool Backspace();
