@@ -55,7 +55,8 @@ CConsole::CConsole(unsigned int nHeight, unsigned int nWidth) :
   //  glBufferData(GL_ARRAY_BUFFER, 24000*sizeof(float), &vertices[0], GL_DYNAMIC_DRAW);
   glBufferData(GL_ARRAY_BUFFER, 24000*sizeof(float), NULL, GL_DYNAMIC_DRAW);
   glBufferSubData(GL_ARRAY_BUFFER, 0, 30 * sizeof(float), cursor);
-  glBufferSubData(GL_ARRAY_BUFFER, 30 * sizeof(float), 30 * sizeof(float), background);
+  glBufferSubData(GL_ARRAY_BUFFER, 30 * sizeof(float), 30 * sizeof(float),
+    background);
   //  glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   //  glGenVertexArrays(1, &m_nVAO);
@@ -66,7 +67,8 @@ CConsole::CConsole(unsigned int nHeight, unsigned int nWidth) :
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
   glVertexAttribPointer((GLuint)0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), 0);
-  glVertexAttribPointer((GLuint)1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*) (3 * sizeof(float)) );
+  glVertexAttribPointer((GLuint)1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float),
+    (void*) (3 * sizeof(float)) );
   glBindVertexArray(0);
 }
 
@@ -116,7 +118,7 @@ void CConsole::AddChar(const char cChar)
 
       glBindBuffer(GL_ARRAY_BUFFER, m_nVBO);
       glBufferSubData(GL_ARRAY_BUFFER, (m_vVertexData.size() + 30) * sizeof(float),
-                      30 * sizeof(float), aVertexData);
+        30 * sizeof(float), aVertexData);
       glBindBuffer(GL_ARRAY_BUFFER, 0);
 
       m_fCursorX += glyph.xadvance / 55 * 18;
@@ -126,11 +128,10 @@ void CConsole::AddChar(const char cChar)
 ////////////////////////////////////////////////////////////////////////////////
 void CConsole::Resize(unsigned int nWidth, unsigned int nHeight)
 {
-  m_matOrtho = glm::ortho( 0.0f, (float)nWidth, (float)nHeight, 0.0f, -1.0f, 1.0f);
+  m_matOrtho = glm::ortho(0.0f, (float)nWidth, (float)nHeight, 0.0f, -1.0f, 1.0f);
 
   m_nWidth  = nWidth;
   m_nHeight = nHeight / 2;
-  std::cout << "console resize " << m_nWidth << "x" << m_nHeight << std::endl;
 
   float fHeight = (float)m_nHeight;
   float fWidth  = (float)m_nWidth;
@@ -259,7 +260,8 @@ void CConsole::Draw(CShader &shader, unsigned int nTime)
       glDrawArrays(GL_TRIANGLES, 12, m_vVertexData.size() / 5);
 
       shader.SetUniform("nConsolePart", 2);
-      shader.SetUniform("opMatrix", glm::translate(m_matOrtho, glm::vec3(m_fCursorX, m_fCursorY, 0)));
+      shader.SetUniform("opMatrix",
+        glm::translate(m_matOrtho, glm::vec3(m_fCursorX, m_fCursorY, 0)));
       glDrawArrays(GL_TRIANGLES, 0, 6);
 
       glDisable(GL_BLEND);

@@ -178,9 +178,8 @@ bool CTUF::InitMap()
 
 void CTUF::OnResize(unsigned int nWidth, unsigned int nHeight)
 {
-  std::cout << "OnResize(" << nWidth << ", " << nHeight << ")" << std::endl;
   glViewport(0, 0, nWidth, nHeight);
-  //SDL_SetWindowSize(m_pMainWindow, nWidth, nHeight);
+
   m_nWindowWidth  = nWidth;
   m_nWindowHeight = nHeight;
   float fAspectRatio = (float)m_nWindowWidth/m_nWindowHeight;
@@ -323,20 +322,16 @@ void CTUF::Update()
 
   matModel = glm::rotate(matModel, fAngle, glm::vec3(0, 1, 0));
 
-  m_matMVP = m_matProjection * m_Cam.GetMatrix() * matModel; // letzte
-                                                            // ist
-                                                            // model
-                                                            // matrix
-  m_mapShader["phong"].SetUniform("mvMatrix", /* m_Cam.GetMatrix() */ matModel);
-  m_mapShader["phong"].SetUniform("mvpMatrix", m_matMVP);
-  //  m_mapShader["phong"].SetUniform("normalMatrix",
-  //  glm::mat3(m_matMVP));
-  m_mapShader["phong"].SetUniform("normalMatrix", glm::mat3(m_Cam.GetMatrix() * matModel));
+  m_matMVP = m_matProjection * m_Cam.GetMatrix() * matModel;
+
+  m_mapShader["phong"].SetUniform("mvMatrix",       matModel);
+  m_mapShader["phong"].SetUniform("mvpMatrix",      m_matMVP);
+  m_mapShader["phong"].SetUniform("normalMatrix",   glm::mat3(m_Cam.GetMatrix() * matModel));
   m_mapShader["phong"].SetUniform("vLightPosition", glm::vec3(5.0f, 5.0f, 10.0));
 
-  m_mapShader["phong"].SetUniform("ambientColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
-  m_mapShader["phong"].SetUniform("diffuseColor", glm::vec4(0.9f, 0.1f, 0.1f, 1.0f));
-  m_mapShader["phong"].SetUniform("specularColor", glm::vec4(0.9f, 0.9f, 0.9f, 1.0f));
+  m_mapShader["phong"].SetUniform("ambientColor",   glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+  m_mapShader["phong"].SetUniform("diffuseColor",   glm::vec4(0.9f, 0.1f, 0.1f, 1.0f));
+  m_mapShader["phong"].SetUniform("specularColor",  glm::vec4(0.9f, 0.9f, 0.9f, 1.0f));
 
 
   for(auto mesh : m_vObjects)
