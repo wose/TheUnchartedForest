@@ -60,10 +60,11 @@ bool CGUI::OnKeyDown(const SDL_Keycode nKeyCode)
     case SDLK_BACKSPACE:
       if(m_pConsole)
         return m_pConsole->Backspace();
+      break;
     case SDLK_RETURN:
       if(m_pConsole)
         return m_pConsole->Enter();
-    break;
+      break;
   }
 
   return false;

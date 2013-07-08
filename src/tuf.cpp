@@ -112,7 +112,6 @@ bool CTUF::InitShader()
 {
   bool bResult = true;
 
-  // simple shader
   m_mapShader["simple"] = CShader();
 
   bResult &=
@@ -153,10 +152,9 @@ bool CTUF::InitViewPort()
 
   for(auto &it : m_mapShader)
     if(it.second.IsLinked())
-      {
-        it.second.Use();
-        //        it.second.SetUniform("perspectiveMatrix", m_matProjection);
-      }
+    {
+      it.second.Use();
+    }
 
   glUseProgram(0);
 
@@ -295,8 +293,6 @@ void CTUF::OnUpdate()
   glClearDepth(1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  //  m_mapShader["simple"].Use();
-  //m_mapShader["simple"].SetUniform("offset", 0.0f, 0.0f, -2.0f);
   m_mapShader["phong"].Use();
 
   float fAngle = (SDL_GetTicks() / 10) % 360;
@@ -315,14 +311,12 @@ void CTUF::OnUpdate()
   m_mapShader["phong"].SetUniform("diffuseColor",   glm::vec4(0.9f, 0.1f, 0.1f, 1.0f));
   m_mapShader["phong"].SetUniform("specularColor",  glm::vec4(0.9f, 0.9f, 0.9f, 1.0f));
 
-
   for(auto mesh : m_vObjects)
     mesh.Draw();
 
   glUseProgram(0);
 
   m_GUI.Draw(m_mapShader["sdf"], m_nLastTicks);
-  //m_pConsole->Draw(m_mapShader["sdf"], m_nLastTicks);
 
   SDL_GL_SwapWindow(m_pMainWindow);
 }
@@ -352,6 +346,7 @@ bool CTUF::Initialize()
 void CTUF::Run()
 {
   m_nTicks = m_nLastTicks = SDL_GetTicks();
+
   while(!m_bQuit)
     {
       m_fElapsedSeconds = (float)(SDL_GetTicks() - m_nLastTicks) / 1000;

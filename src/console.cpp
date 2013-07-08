@@ -33,36 +33,33 @@ CConsole::CConsole(const uint nWidth, const uint nHeight) :
   glGenBuffers(1, &m_nVBO);
 
   CSDFFont::glyph_t glyph = m_Font.m_mapGlyphs['O'];
-  float cursor[] = {(float)glyph.xoffset / 55 * 18, - (float)glyph.yoffset / 55 * 18 +(float)glyph.height / 55 * 18,  0, 0, 0,
-                    (float)glyph.xoffset / 55 * 18, - (float)glyph.yoffset / 55 * 18, 0, 0, 0,
-                    (float)glyph.xoffset / 55 * 18 + (float)glyph.width / 55 * 18, - (float)glyph.yoffset / 55 * 18, 0, 0, 0,
-                    (float)glyph.xoffset / 55 * 18,  - (float)glyph.yoffset / 55 * 18 +(float)glyph.height / 55 * 18,  0, 0, 0,
-                    (float)glyph.xoffset / 55 * 18 + (float)glyph.width / 55 * 18, - (float)glyph.yoffset / 55 * 18,  0, 0, 0,
-                    (float)glyph.xoffset / 55 * 18 + (float)glyph.width / 55 * 18, - (float)glyph.yoffset / 55 * 18 +(float)glyph.height / 55 * 18, 0, 0, 0
-  };
+  float cursor[] =
+    {
+      (float)glyph.xoffset / 55 * 18, - (float)glyph.yoffset / 55 * 18 +(float)glyph.height / 55 * 18,  0, 0, 0,
+      (float)glyph.xoffset / 55 * 18, - (float)glyph.yoffset / 55 * 18, 0, 0, 0,
+      (float)glyph.xoffset / 55 * 18 + (float)glyph.width / 55 * 18, - (float)glyph.yoffset / 55 * 18, 0, 0, 0,
+      (float)glyph.xoffset / 55 * 18,  - (float)glyph.yoffset / 55 * 18 +(float)glyph.height / 55 * 18,  0, 0, 0,
+      (float)glyph.xoffset / 55 * 18 + (float)glyph.width / 55 * 18, - (float)glyph.yoffset / 55 * 18,  0, 0, 0,
+      (float)glyph.xoffset / 55 * 18 + (float)glyph.width / 55 * 18, - (float)glyph.yoffset / 55 * 18 +(float)glyph.height / 55 * 18, 0, 0, 0
+    };
 
   float fHeight = (float)m_nHeight;
   float fWidth  = (float)m_nWidth;
-  float background[] = { 0,       0,        0, 0, 0,
-                         0,       fHeight,  0, 0, 0,
-                         fWidth,  fHeight,  0, 0, 0,
-                         0,       0,        0, 0, 0,
-                         fWidth,  fHeight,  0, 0, 0,
-                         fWidth,  0,        0, 0, 0
-  };
+  float background[] =
+    {
+      0,       0,        0, 0, 0,
+      0,       fHeight,  0, 0, 0,
+      fWidth,  fHeight,  0, 0, 0,
+      0,       0,        0, 0, 0,
+      fWidth,  fHeight,  0, 0, 0,
+      fWidth,  0,        0, 0, 0
+    };
 
   glBindBuffer(GL_ARRAY_BUFFER, m_nVBO);
-  //  glBufferData(GL_ARRAY_BUFFER, 24000*sizeof(float), &vertices[0], GL_DYNAMIC_DRAW);
   glBufferData(GL_ARRAY_BUFFER, 24000*sizeof(float), NULL, GL_DYNAMIC_DRAW);
   glBufferSubData(GL_ARRAY_BUFFER, 0, 30 * sizeof(float), cursor);
   glBufferSubData(GL_ARRAY_BUFFER, 30 * sizeof(float), 30 * sizeof(float),
     background);
-  //  glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-  //  glGenVertexArrays(1, &m_nVAO);
-  //  glBindVertexArray(m_nVAO);
-
-  //  glBindBuffer(GL_ARRAY_BUFFER, m_nVBO);
 
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
@@ -87,19 +84,17 @@ void CConsole::AddChar(const char cChar)
 {
   if(m_bVisible)
     {
-      float fTexT, fTexB, fTexL, fTexR;
-      float fVertT, fVertB, fVertL, fVertR;
       CSDFFont::glyph_t glyph = m_Font.m_mapGlyphs[cChar];
 
-      fTexL = (float)glyph.x / 512;
-      fTexT = (float)glyph.y / 512;
-      fTexR = (float)glyph.x / 512 + (float)glyph.width / 512;
-      fTexB = (float)glyph.y / 512 + (float)glyph.height / 512;
+      float fTexL = (float)glyph.x / 512;
+      float fTexT = (float)glyph.y / 512;
+      float fTexR = (float)glyph.x / 512 + (float)glyph.width / 512;
+      float fTexB = (float)glyph.y / 512 + (float)glyph.height / 512;
 
-      fVertL = m_fCursorX + (float)glyph.xoffset / 55 * 18;
-      fVertT = m_fCursorY - (float)glyph.yoffset / 55 * 18;
-      fVertR = fVertL + (float)glyph.width / 55 * 18;
-      fVertB = fVertT + (float)glyph.height / 55 * 18;
+      float fVertL = m_fCursorX + (float)glyph.xoffset / 55 * 18;
+      float fVertT = m_fCursorY - (float)glyph.yoffset / 55 * 18;
+      float fVertR = fVertL + (float)glyph.width / 55 * 18;
+      float fVertB = fVertT + (float)glyph.height / 55 * 18;
 
       float aVertexData[] =
         {
@@ -131,13 +126,15 @@ void CConsole::Resize(const uint nWidth, const uint nHeight)
 
   float fHeight = (float)m_nHeight;
   float fWidth  = (float)m_nWidth;
-  float background[] = { 0,       0,        0, 0, 0,
-                         0,       fHeight,  0, 0, 0,
-                         fWidth,  fHeight,  0, 0, 0,
-                         0,       0,        0, 0, 0,
-                         fWidth,  fHeight,  0, 0, 0,
-                         fWidth,  0,        0, 0, 0
-  };
+  float background[] =
+    {
+      0,       0,        0, 0, 0,
+      0,       fHeight,  0, 0, 0,
+      fWidth,  fHeight,  0, 0, 0,
+      0,       0,        0, 0, 0,
+      fWidth,  fHeight,  0, 0, 0,
+      fWidth,  0,        0, 0, 0
+    };
 
   glBindBuffer(GL_ARRAY_BUFFER, m_nVBO);
   glBufferSubData(GL_ARRAY_BUFFER, 30 * sizeof(float), 30 * sizeof(float),
@@ -179,14 +176,12 @@ void CConsole::Invalidate()
 
 bool CConsole::HandleText(const char cChar)
 {
-  if(m_bVisible)
+  if(m_bVisible and m_Font.m_mapGlyphs.find(cChar) != m_Font.m_mapGlyphs.end())
     {
-      if(m_Font.m_mapGlyphs.find(cChar) != m_Font.m_mapGlyphs.end())
-        {
-          m_strCommand += cChar;
-          AddChar(cChar);
-          return true;
-        }
+      m_strCommand += cChar;
+      AddChar(cChar);
+
+      return true;
     }
   return false;
 }
@@ -198,6 +193,7 @@ bool CConsole::Backspace()
       m_fCursorX -= 27.5 / 55 * 18;
       m_strCommand.pop_back();
       m_vVertexData.erase(m_vVertexData.end() - 30, m_vVertexData.end());
+
       return true;
     }
   else
@@ -208,58 +204,53 @@ bool CConsole::Enter()
 {
   if(m_bVisible && m_strCommand.size() > 0)
     {
-      std::cout << m_strCommand << std::endl;
+      std::cout << "command: " << m_strCommand << std::endl;
       m_vHistory.push_back(m_strCommand);
       m_vOutput.push_back(m_strCommand);
-      //      m_vVertexData.erase(m_vVertexData.begin() , m_vVertexData.end());
       m_strCommand.clear();
       m_strCommand = "";
-      std::cout << m_strCommand << std::endl;
-      //      ResetCursor();
       Invalidate();
 
       return true;
     }
-  else
-    return false;
-
+  return false;
 }
 
 void CConsole::Draw(CShader &shader, const uint nTime)
 {
   if(m_bVisible)
-    {
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glDisable(GL_DEPTH_TEST);
-      glDisable(GL_CULL_FACE);
+  {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
 
-      shader.Use();
-      shader.SetUniform("fSine", (float)sin((float)nTime / 300));
-      shader.SetUniform("nConsolePart", 0);
-      shader.SetUniform("fontTexture", 0);
-      shader.SetUniform("vFontColor", m_vFontColor);
-      shader.SetUniform("vBackgroundColor", m_vBackgroundColor);
-      shader.SetUniform("opMatrix", m_matOrtho);
+    shader.Use();
+    shader.SetUniform("fSine", (float)sin((float)nTime / 300));
+    shader.SetUniform("nConsolePart", 0);
+    shader.SetUniform("fontTexture", 0);
+    shader.SetUniform("vFontColor", m_vFontColor);
+    shader.SetUniform("vBackgroundColor", m_vBackgroundColor);
+    shader.SetUniform("opMatrix", m_matOrtho);
 
-      glBindVertexArray(m_nVAO);
-      glBindTexture(GL_TEXTURE_2D, m_Font.GetTextureID());
+    glBindVertexArray(m_nVAO);
+    glBindTexture(GL_TEXTURE_2D, m_Font.GetTextureID());
 
-      glDrawArrays(GL_TRIANGLES, 6, 6);
+    glDrawArrays(GL_TRIANGLES, 6, 6);
 
-      shader.SetUniform("nConsolePart", 1);
-      glDrawArrays(GL_TRIANGLES, 12, m_vVertexData.size() / 5);
+    shader.SetUniform("nConsolePart", 1);
+    glDrawArrays(GL_TRIANGLES, 12, m_vVertexData.size() / 5);
 
-      shader.SetUniform("nConsolePart", 2);
-      shader.SetUniform("opMatrix",
-        glm::translate(m_matOrtho, glm::vec3(m_fCursorX, m_fCursorY, 0)));
-      glDrawArrays(GL_TRIANGLES, 0, 6);
+    shader.SetUniform("nConsolePart", 2);
+    shader.SetUniform("opMatrix",
+      glm::translate(m_matOrtho, glm::vec3(m_fCursorX, m_fCursorY, 0)));
+    glDrawArrays(GL_TRIANGLES, 0, 6);
 
-      glDisable(GL_BLEND);
-      glEnable(GL_DEPTH_TEST);
-      glEnable(GL_CULL_FACE);
-      glBindVertexArray(0);
-    }
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glBindVertexArray(0);
+  }
 }
 
 void CConsole::Toggle()
