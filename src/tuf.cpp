@@ -1,16 +1,16 @@
 #include <iostream>
 
-#ifndef GL3_PROTOTYPES
-#define GL3_PROTOTYPES
-#endif
-#include <GL3/gl3.h>
-
 #include <SDL.h>
 #define PROGRAM_NAME "TheUnchartedForest"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
+
+#ifndef GL3_PROTOTYPES
+#define GL3_PROTOTYPES
+#endif
+#include "GL3/gl3.h"
 
 #include "tuf.h"
 #include "shader.h"
@@ -63,6 +63,12 @@ void CTUF::CheckSDLError(int nLine /* = -1 */)
 #endif
 }
 
+bool CTUF::InitGUI()
+{
+  m_GUI.Init(m_nWindowWidth, m_nWindowHeight);
+  return true;
+}
+
 bool CTUF::InitSDL()
 {
   if(SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -97,6 +103,7 @@ bool CTUF::InitSDL()
   SDL_GL_SetSwapInterval(1);
   //  SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
   SDL_SetRelativeMouseMode(SDL_TRUE);
+  SDL_SetWindowGrab(m_pMainWindow, SDL_TRUE);
 
   return true;
 }
@@ -134,12 +141,6 @@ bool CTUF::InitShader()
 
 bool CTUF::InitViewPort()
 {
-  //  m_matPerspective[0][0] = m_fFrustumScale;
-  // m_matPerspective[1][1] = m_fFrustumScale;
-  // m_matPerspective[2][2] =  (m_fzFar + m_fzNear) / (m_fzNear - m_fzFar);
-  // m_matPerspective[2][3] = (2 * m_fzFar * m_fzNear) / (m_fzNear - m_fzFar);
-  // m_matPerspective[3][2] = -1.0f;
-
   m_matProjection = glm::perspective(45.0f, (float)m_nWindowWidth/m_nWindowHeight, 0.1f, 100.0f);
   m_matView = glm::lookAt(
                           glm::vec3(4, 3, 3),
@@ -171,8 +172,6 @@ bool CTUF::InitMap()
 {
   m_vObjects.push_back(CMesh("foo"));
 
-  m_pConsole = new CConsole(m_nWindowHeight, m_nWindowWidth);
-
   return true;
 }
 
@@ -185,25 +184,18 @@ void CTUF::OnResize(unsigned int nWidth, unsigned int nHeight)
   float fAspectRatio = (float)m_nWindowWidth/m_nWindowHeight;
 
   m_matProjection = glm::perspective(45.0f, fAspectRatio, 0.1f, 100.0f);
-  if(m_pConsole)
-    m_pConsole->Resize(nWidth, nHeight);
+  m_GUI.Resize(nWidth, nHeight);
 }
 
 void CTUF::TearDown()
 {
-  if(m_pConsole)
-    {
-      delete m_pConsole;
-      m_pConsole = nullptr;
-    }
-
   SDL_GL_DeleteContext(m_MainContext);
   SDL_DestroyWindow(m_pMainWindow);
   m_pMainWindow = nullptr;
   SDL_Quit();
 }
 
-void CTUF::HandleEvents()
+void CTUF::OnEvent()
 {
   SDL_Event event;
   while(SDL_PollEvent(&event))
@@ -225,64 +217,40 @@ void CTUF::HandleEvents()
           }
           break;
         case SDL_MOUSEMOTION:
-          if(m_bHasFocus and !m_pConsole->IsVisible())
-          {
-            m_Cam.RotateUp(m_fElapsedSeconds * MAX_SPEED * 10 * event.motion.yrel);
-            m_Cam.RotateRight(m_fElapsedSeconds * MAX_SPEED * 10 * event.motion.xrel);
-          }
+          OnMouseMotion(event.motion.xrel, event.motion.yrel);
           break;
         case SDL_TEXTINPUT:
-          if(m_pConsole->HandleText(*event.text.text))
-            return;
+          OnTextInput(*event.text.text);
           break;
         case SDL_KEYDOWN:
-          switch(event.key.keysym.sym)
+          if(!m_GUI.OnKeyDown(event.key.keysym.sym))
+          {
+            switch(event.key.keysym.sym)
             {
-            case SDLK_BACKSPACE:
-              if(m_pConsole->Backspace())
-                return;
-              break;
-            case SDLK_RETURN:
-              if(m_pConsole->Enter())
-                return;
-              break;
-            case SDLK_ESCAPE:
-              m_bQuit = true;
-              break;
-            case SDLK_w:
-            case SDLK_s:
-            case SDLK_a:
-            case SDLK_d:
-              //m_Cam.SetOffsetPosition(m_fElapsedSeconds * MAX_SPEED
-              //* m_Cam.Right());
-              break;
-            case SDLK_UP:
-              //m_Cam.RotateUp(1);
-              break;
-            case SDLK_DOWN:
-              //m_Cam.RotateUp(-1);
-              break;
-            case SDLK_RIGHT:
-              //m_Cam.RotateRight(1);
-              break;
-            case SDLK_LEFT:
-              //m_Cam.RotateRight(-1);
-              break;
-            case SDLK_c:
-              break;
-            default:
-              break;
+              case SDLK_ESCAPE:
+                m_bQuit = true;
+                break;
+              case SDLK_TAB:
+                m_GUI.Toggle();
+                break;
+              case SDLK_F1:
+                if(m_pMainWindow)
+                  SDL_SetWindowGrab(m_pMainWindow,
+                    (SDL_bool)(SDL_GetWindowGrab(m_pMainWindow) == SDL_FALSE));
+              default:
+                break;
             }
-            break;
-          case SDL_QUIT:
-            m_bQuit = true;
-            break;
-          default:
-            break;
-        }
+          }
+        break;
+      case SDL_QUIT:
+        m_bQuit = true;
+        break;
+      default:
+        break;
     }
+  }
 
-  if(!m_pConsole->IsVisible() and m_bHasFocus)
+  if(!m_GUI.IsVisible() and !m_GUI.IsConsoleVisible() and m_bHasFocus)
     {
       Uint8 *aKeyState = SDL_GetKeyboardState(nullptr);
 
@@ -307,7 +275,21 @@ void CTUF::HandleEvents()
 
 }
 
-void CTUF::Update()
+void CTUF::OnMouseMotion(const int xrel, const int yrel)
+{
+  if(m_bHasFocus and !m_GUI.IsVisible())
+  {
+    m_Cam.RotateUp(m_fElapsedSeconds * MAX_SPEED * 10 * yrel);
+    m_Cam.RotateRight(m_fElapsedSeconds * MAX_SPEED * 10 * xrel);
+  }
+}
+
+void CTUF::OnTextInput(const char cChar)
+{
+  m_GUI.OnTextInput(cChar);
+}
+
+void CTUF::OnUpdate()
 {
   glClearColor(0.7f, 0.7f, 0.7f, 0.0f);
   glClearDepth(1.0f);
@@ -339,7 +321,8 @@ void CTUF::Update()
 
   glUseProgram(0);
 
-  m_pConsole->Draw(m_mapShader["sdf"], m_nLastTicks);
+  m_GUI.Draw(m_mapShader["sdf"], m_nLastTicks);
+  //m_pConsole->Draw(m_mapShader["sdf"], m_nLastTicks);
 
   SDL_GL_SwapWindow(m_pMainWindow);
 }
@@ -363,7 +346,7 @@ void CTUF::UpdateFPS()
 ////////////////////////////////////////////////////////////////////////////////
 bool CTUF::Initialize()
 {
-  return InitSDL() && InitShader() && InitViewPort() && InitMap();
+  return InitSDL() && InitShader() && InitViewPort() && InitMap() && InitGUI();
 }
 
 void CTUF::Run()
@@ -373,8 +356,8 @@ void CTUF::Run()
     {
       m_fElapsedSeconds = (float)(SDL_GetTicks() - m_nLastTicks) / 1000;
       m_nLastTicks = SDL_GetTicks();
-      HandleEvents();
-      Update();
+      OnEvent();
+      OnUpdate();
       UpdateFPS();
       SDL_Delay(1);
     }

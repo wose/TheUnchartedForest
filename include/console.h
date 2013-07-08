@@ -20,15 +20,15 @@ class CShader;
 class CConsole
 {
  public:
-  CConsole(unsigned int nHeight, unsigned int nWidth);
+  CConsole(const uint nWidth, const uint nHeight);
   ~CConsole();
 
  private:
   bool m_bVisible;
   bool m_bGlow;
 
-  unsigned int m_nWidth;
-  unsigned int m_nHeight;
+  uint m_nWidth;
+  uint m_nHeight;
   CSDFFont m_Font;
 
   glm::mat4 m_matOrtho;
@@ -52,19 +52,18 @@ class CConsole
 //  std::map<std::string, std::function<std::string ()> func> m_Commands;
 
  private:
-  void ResetCursor();
-  void AddLineFormat(const char *cFmt, ...);
   void AddChar(const char cChar);
+  void ResetCursor();
 
  public:
-  void Resize(unsigned int nWidth, unsigned int nHeight);
-  void Invalidate();
-  bool HandleText(const char cChar);
   bool Backspace();
+  void Draw(CShader &shader, const uint nTime);
   bool Enter();
-  void Draw(CShader &shader, unsigned int nTime);
+  void Invalidate();
+  bool IsVisible() const { return m_bVisible; }
+  bool HandleText(const char cChar);
   void Toggle();
-  bool IsVisible() { return m_bVisible; }
+  void Resize(const uint nWidth, const uint nHeight);
 };
 
 #endif

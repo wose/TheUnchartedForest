@@ -10,7 +10,7 @@
 #include <glm/glm.hpp>
 
 #include "camera.h"
-#include "console.h"
+#include "gui.h"
 
 class CShader;
 class CMesh;
@@ -29,9 +29,6 @@ class CTUF
   std::map<std::string, CShader> m_mapShader;
   std::vector<CMesh> m_vObjects;
 
-  unsigned int m_nWindowWidth;
-  unsigned int m_nWindowHeight;
-
   float m_fzNear;
   float m_fzFar;
   float m_fFrustumScale;
@@ -40,31 +37,37 @@ class CTUF
   SDL_Window *m_pMainWindow;
   SDL_GLContext m_MainContext;
 
-  unsigned int m_nFrames;
-  unsigned int m_nTicks;
-  unsigned int m_nLastTicks;
+  uint  m_nWindowWidth;
+  uint  m_nWindowHeight;
+  uint  m_nFrames;
+  uint  m_nTicks;
+  uint  m_nLastTicks;
   float m_fFPS;
 
   glm::mat4 m_matProjection;
   glm::mat4 m_matView;
   glm::mat4 m_matMVP;
 
-  CCamera m_Cam;
-  CConsole *m_pConsole;
+  CCamera  m_Cam;
+  CGUI     m_GUI;
 
  private:
-  void Die(const char *cMsg);
   void CheckSDLError(int nLine = -1);
+  void Die(const char *cMsg);
+
+  bool InitMap();
   bool InitSDL();
   bool InitShader();
   bool InitViewPort();
-  bool InitMap();
+  bool InitGUI();
 
-  void OnResize(unsigned int nWidth, unsigned int nHeight);
+  void OnEvent();
+  void OnMouseMotion(const int xrel, const int yrel);
+  void OnResize(const uint nWidth, const uint nHeight);
+  void OnTextInput(const char cChar);
+  void OnUpdate();
+
   void TearDown();
-
-  void HandleEvents();
-  void Update();
   void UpdateFPS();
 
  public:

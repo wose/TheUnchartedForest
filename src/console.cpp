@@ -1,8 +1,3 @@
-#ifndef GL3_PROTOTYPES
-#define GL3_PROTOTYPES
-#endif
-#include "GL3/gl3.h"
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
@@ -10,10 +5,15 @@
 #include <iostream>
 #include <cmath>
 
+#ifndef GL3_PROTOTYPES
+#define GL3_PROTOTYPES
+#endif
+#include "GL3/gl3.h"
+
 #include "console.h"
 #include "shader.h"
 
-CConsole::CConsole(unsigned int nHeight, unsigned int nWidth) :
+CConsole::CConsole(const uint nWidth, const uint nHeight) :
   m_bVisible(false),
   m_bGlow(false),
   m_nHeight(nHeight/2),
@@ -83,10 +83,6 @@ void CConsole::ResetCursor()
   m_fCursorY = m_nHeight - 20;
 }
 
-void CConsole::AddLineFormat(const char *cFmt, ...)
-{
-}
-
 void CConsole::AddChar(const char cChar)
 {
   if(m_bVisible)
@@ -126,7 +122,7 @@ void CConsole::AddChar(const char cChar)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void CConsole::Resize(unsigned int nWidth, unsigned int nHeight)
+void CConsole::Resize(const uint nWidth, const uint nHeight)
 {
   m_matOrtho = glm::ortho(0.0f, (float)nWidth, (float)nHeight, 0.0f, -1.0f, 1.0f);
 
@@ -183,11 +179,6 @@ void CConsole::Invalidate()
 
 bool CConsole::HandleText(const char cChar)
 {
-  if(cChar == '`')
-    {
-      Toggle();
-      return true;
-    }
   if(m_bVisible)
     {
       if(m_Font.m_mapGlyphs.find(cChar) != m_Font.m_mapGlyphs.end())
@@ -234,7 +225,7 @@ bool CConsole::Enter()
 
 }
 
-void CConsole::Draw(CShader &shader, unsigned int nTime)
+void CConsole::Draw(CShader &shader, const uint nTime)
 {
   if(m_bVisible)
     {
@@ -273,5 +264,5 @@ void CConsole::Draw(CShader &shader, unsigned int nTime)
 
 void CConsole::Toggle()
 {
-  m_bVisible = m_bVisible == false;
+  m_bVisible = !m_bVisible;
 }
