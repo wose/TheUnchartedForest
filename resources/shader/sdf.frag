@@ -9,6 +9,7 @@ uniform int nConsolePart;
 uniform float fSine;
 
 smooth in vec2 vUV;
+smooth in vec3 vColor;
 
 const float SmoothCenter = 0.5;
 const float SmoothWidth = 0.25;
@@ -31,6 +32,6 @@ void main(void)
                                  SmoothCenter + SmoothWidth,
                                  distance);
 
-        vFragColor = vec4(vFontColor.xyz, color.a * alpha);
+        vFragColor = vec4(vColor, color.a * alpha);
     }
 }

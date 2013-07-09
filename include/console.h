@@ -26,6 +26,7 @@ class CConsole
  private:
   bool m_bVisible;
   bool m_bGlow;
+  bool m_bColoringMode;
 
   uint m_nWidth;
   uint m_nHeight;
@@ -35,8 +36,10 @@ class CConsole
   glm::vec4 m_vFontColor;
   glm::vec4 m_vBackgroundColor;
   glm::vec4 m_vGlowColor;
+  glm::vec3 m_vCurrentFontColor;
 
   std::string m_strCommand;
+  std::string m_strColorCode;
 
   std::vector<std::string> m_vHistory;
   std::vector<std::string> m_vOutput;
@@ -53,6 +56,7 @@ class CConsole
 
  private:
   void AddChar(const char cChar);
+  void SetCurrentColor();
   void ResetCursor();
 
  public:
