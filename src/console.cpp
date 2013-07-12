@@ -88,38 +88,35 @@ void CConsole::ResetCursor()
 
 void CConsole::AddChar(const char cChar)
 {
-  if(m_bVisible)
+  CSDFFont::glyph_t glyph = m_Font.m_mapGlyphs[cChar];
+
+  float fTexL = (float)glyph.x / 512;
+  float fTexT = (float)glyph.y / 512;
+  float fTexR = (float)glyph.x / 512 + (float)glyph.width / 512;
+  float fTexB = (float)glyph.y / 512 + (float)glyph.height / 512;
+
+  float fVertL = m_fCursorX + (float)glyph.xoffset / 55 * 18;
+  float fVertT = m_fCursorY - (float)glyph.yoffset / 55 * 18;
+  float fVertR = fVertL + (float)glyph.width / 55 * 18;
+  float fVertB = fVertT + (float)glyph.height / 55 * 18;
+
+  float aVertexData[] =
     {
-      CSDFFont::glyph_t glyph = m_Font.m_mapGlyphs[cChar];
+      fVertL, fVertB, 0.0, fTexL, fTexB, m_vCurrentFontColor.r, m_vCurrentFontColor.g, m_vCurrentFontColor.b,
+      fVertL, fVertT, 0.0, fTexL, fTexT, m_vCurrentFontColor.r, m_vCurrentFontColor.g, m_vCurrentFontColor.b,
+      fVertR, fVertT, 0.0, fTexR, fTexT, m_vCurrentFontColor.r, m_vCurrentFontColor.g, m_vCurrentFontColor.b,
+      fVertL, fVertB, 0.0, fTexL, fTexB, m_vCurrentFontColor.r, m_vCurrentFontColor.g, m_vCurrentFontColor.b,
+      fVertR, fVertT, 0.0, fTexR, fTexT, m_vCurrentFontColor.r, m_vCurrentFontColor.g, m_vCurrentFontColor.b,
+      fVertR, fVertB, 0.0, fTexR, fTexB, m_vCurrentFontColor.r, m_vCurrentFontColor.g, m_vCurrentFontColor.b
+    };
+  m_vVertexData.insert(m_vVertexData.end(), aVertexData, aVertexData + 48);
 
-      float fTexL = (float)glyph.x / 512;
-      float fTexT = (float)glyph.y / 512;
-      float fTexR = (float)glyph.x / 512 + (float)glyph.width / 512;
-      float fTexB = (float)glyph.y / 512 + (float)glyph.height / 512;
+  glBindBuffer(GL_ARRAY_BUFFER, m_nVBO);
+  glBufferSubData(GL_ARRAY_BUFFER, (m_vVertexData.size() + 48) * sizeof(float),
+    48 * sizeof(float), aVertexData);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-      float fVertL = m_fCursorX + (float)glyph.xoffset / 55 * 18;
-      float fVertT = m_fCursorY - (float)glyph.yoffset / 55 * 18;
-      float fVertR = fVertL + (float)glyph.width / 55 * 18;
-      float fVertB = fVertT + (float)glyph.height / 55 * 18;
-
-      float aVertexData[] =
-        {
-          fVertL, fVertB, 0.0, fTexL, fTexB, m_vCurrentFontColor.r, m_vCurrentFontColor.g, m_vCurrentFontColor.b,
-          fVertL, fVertT, 0.0, fTexL, fTexT, m_vCurrentFontColor.r, m_vCurrentFontColor.g, m_vCurrentFontColor.b,
-          fVertR, fVertT, 0.0, fTexR, fTexT, m_vCurrentFontColor.r, m_vCurrentFontColor.g, m_vCurrentFontColor.b,
-          fVertL, fVertB, 0.0, fTexL, fTexB, m_vCurrentFontColor.r, m_vCurrentFontColor.g, m_vCurrentFontColor.b,
-          fVertR, fVertT, 0.0, fTexR, fTexT, m_vCurrentFontColor.r, m_vCurrentFontColor.g, m_vCurrentFontColor.b,
-          fVertR, fVertB, 0.0, fTexR, fTexB, m_vCurrentFontColor.r, m_vCurrentFontColor.g, m_vCurrentFontColor.b
-        };
-      m_vVertexData.insert(m_vVertexData.end(), aVertexData, aVertexData + 48);
-
-      glBindBuffer(GL_ARRAY_BUFFER, m_nVBO);
-      glBufferSubData(GL_ARRAY_BUFFER, (m_vVertexData.size() + 48) * sizeof(float),
-        48 * sizeof(float), aVertexData);
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-      m_fCursorX += glyph.xadvance / 55 * 18;
-    }
+  m_fCursorX += glyph.xadvance / 55 * 18;
 }
 
 void CConsole::SetCurrentColor()
@@ -154,6 +151,12 @@ void CConsole::SetCurrentColor()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void CConsole::AddLine(const std::string& strLine)
+{
+  m_vOutput.push_back(strLine);
+  Invalidate();
+}
+
 void CConsole::Resize(const uint nWidth, const uint nHeight)
 {
   m_matOrtho = glm::ortho(0.0f, (float)nWidth, (float)nHeight, 0.0f, -1.0f, 1.0f);
@@ -212,6 +215,8 @@ void CConsole::Invalidate()
 
   m_fCursorX = 16.0;
   m_fCursorY = m_nHeight - 20;
+  m_vCurrentFontColor = glm::vec3(m_vFontColor);
+
   if(m_strCommand.size() > 0)
     for(char &c : m_strCommand)
       {
@@ -263,10 +268,6 @@ bool CConsole::Enter()
       m_strCommand.clear();
       m_strCommand = "";
       Invalidate();
-
-      m_vCurrentFontColor.r = m_vFontColor.r;
-      m_vCurrentFontColor.g = m_vFontColor.g;
-      m_vCurrentFontColor.b = m_vFontColor.b;
 
       return true;
     }

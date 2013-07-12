@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <glog/logging.h>
+
 #include <SDL.h>
 #define PROGRAM_NAME "TheUnchartedForest"
 
@@ -15,6 +17,7 @@
 #include "tuf.h"
 #include "shader.h"
 #include "mesh.h"
+#include "consolelogger.h"
 
 #define MAX_SPEED 2.0f
 
@@ -33,6 +36,8 @@ CTUF::CTUF() :
   m_nFrames(0),
   m_nTicks(0)
 {
+  google::InitGoogleLogging("");
+  LOG(INFO) << "Logging initialized";
 }
 
 CTUF::~CTUF()
@@ -328,9 +333,10 @@ void CTUF::UpdateFPS()
   if(SDL_GetTicks() - m_nTicks > 1000)
     {
       m_fFPS = (m_nFrames/(float)(SDL_GetTicks() - m_nTicks)) * 1000;
-      std::cout << "FPS: " << m_fFPS << std::endl;
-      std::cout << "LastTicks: " << m_nLastTicks << std::endl;
-      std::cout << "ElapsedSeconds:" << m_fElapsedSeconds << std::endl;
+      DLOG(INFO) << m_fFPS << " FPS";
+//      std::cout << "FPS: " << m_fFPS << std::endl;
+//      std::cout << "LastTicks: " << m_nLastTicks << std::endl;
+//      std::cout << "ElapsedSeconds:" << m_fElapsedSeconds << std::endl;
 
       m_nFrames = 0;
       m_nTicks = SDL_GetTicks();

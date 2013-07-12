@@ -1,3 +1,5 @@
+#include <glog/logging.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
@@ -25,6 +27,9 @@ void CGUI::Init(const uint nWidth, const uint nHeight)
   m_nWidth   = nWidth;
   m_nHeight  = nHeight;
   m_pConsole = new CConsole(nWidth, nHeight);
+  m_ConsoleLogger.SetConsole(m_pConsole);
+  google::AddLogSink(&m_ConsoleLogger);
+  LOG(INFO) << "console logger added";
 }
 
 void CGUI::Draw(CShader &shader, const uint nTime)

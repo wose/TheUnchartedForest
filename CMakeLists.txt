@@ -17,6 +17,9 @@ include_directories(${GLM_INCLUDE_DIR})
 find_package(PNG REQUIRED)
 include_directories(${PNG_INCLUDE_DIR})
 
+find_package(Glog REQUIRED)
+include_directories(${GLOG_INCLUDE_DIRS})
+
 file(COPY ${CMAKE_SOURCE_DIR}/resources
   DESTINATION ${CMAKE_BINARY_DIR}
 )
@@ -36,6 +39,7 @@ set(SMDHDR
 set(SRC
   src/camera.cpp
   src/console.cpp
+  src/consolelogger.cpp
   src/gui.cpp
   src/guibar.cpp
   src/guielement.cpp
@@ -51,6 +55,7 @@ set(SRC
 set(HDR
   include/camera.h
   include/console.h
+  include/consolelogger.h
   include/gui.h
   include/guibar.h
   include/guielement.h
@@ -85,5 +90,6 @@ target_link_libraries(
   ${OPENGL_LIBRARIES}
   ${SDL2_LIBRARY}
   ${PNG_LIBRARY}
+  ${GLOG_LIBRARIES}
   ${EXTRA_LIBS}
 )

@@ -60,6 +60,7 @@ class CConsole
   void ResetCursor();
 
  public:
+  void AddLine(const std::string& strLine);
   bool Backspace();
   void Draw(CShader &shader, const uint nTime);
   bool Enter();

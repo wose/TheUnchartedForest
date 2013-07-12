@@ -12,6 +12,7 @@
 #include "GL3/gl3.h"
 
 #include "console.h"
+#include "consolelogger.h"
 #include "guielement.h"
 #include "shader.h"
 
@@ -32,6 +33,7 @@ class CGUI
   GLuint    m_nVAO;
   CTexture  m_Texture;
   CConsole* m_pConsole;
+  CConsoleLogger m_ConsoleLogger;
 
   glm::mat4 m_matOrtho;
 
