@@ -1,3 +1,5 @@
+#include <glog/logging.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
@@ -28,6 +30,7 @@ CConsole::CConsole(const uint nWidth, const uint nHeight) :
   m_nFontSize(18)
 {
   m_matOrtho = glm::ortho( 0.0f, (float)nWidth, (float)nHeight, 0.0f, -1.0f, 1.0f);
+  m_itHistory = m_vHistory.end();
 
   glGenVertexArrays(1, &m_nVAO);
   glBindVertexArray(m_nVAO);
@@ -154,6 +157,8 @@ void CConsole::SetCurrentColor()
 void CConsole::AddLine(const std::string& strLine)
 {
   m_vOutput.push_back(strLine);
+    if(m_vOutput.size() > m_nHistorySize)
+      m_vOutput.pop_front();
   Invalidate();
 }
 
@@ -265,9 +270,13 @@ bool CConsole::Enter()
       std::cout << "command: " << m_strCommand << std::endl;
       m_vHistory.push_back(m_strCommand);
       m_vOutput.push_back(m_strCommand);
+      if(m_vOutput.size() > m_nHistorySize)
+        m_vOutput.pop_front();
       m_strCommand.clear();
       m_strCommand = "";
       Invalidate();
+
+      m_itHistory = m_vHistory.end();
 
       return true;
     }
@@ -313,5 +322,26 @@ void CConsole::Draw(CShader &shader, const uint nTime)
 
 void CConsole::Toggle()
 {
+  LOG(INFO) << "[Console] history size : " << m_vOutput.size();
   m_bVisible = !m_bVisible;
+}
+
+void CConsole::Down()
+{
+  if(m_itHistory != --m_vHistory.end())
+  {
+    m_itHistory++;
+    m_strCommand = *m_itHistory;
+    Invalidate();
+  }
+}
+
+void CConsole::Up()
+{
+  if(m_itHistory != m_vHistory.begin())
+  {
+    m_itHistory--;
+    m_strCommand = *m_itHistory;
+    Invalidate();
+  }
 }

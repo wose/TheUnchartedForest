@@ -346,7 +346,7 @@ void CTUF::UpdateFPS()
 ////////////////////////////////////////////////////////////////////////////////
 bool CTUF::Initialize()
 {
-  return InitSDL() && InitShader() && InitViewPort() && InitMap() && InitGUI();
+  return InitSDL() && InitShader() && InitViewPort() && InitGUI() && InitMap();
 }
 
 void CTUF::Run()

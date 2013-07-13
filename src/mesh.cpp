@@ -1,3 +1,5 @@
+#include <glog/logging.h>
+
 #include "mesh.h"
 #include "utils.h"
 #include "smd/smdloader.h"
@@ -5,17 +7,12 @@
 
 CMesh::CMesh(const std::string &strFile)
 {
+  LOG(INFO) << "loading mesh " << strFile;
+
   CSMDLoader smd;
   smd.LoadModel("resources/mesh/Torus.smd");
 
   m_VertexCount= smd.m_vVertexIDs.size();
-
-
-#define GREEN_COLOR 0.75f, 0.75f, 1.0f, 1.0f
-#define BLUE_COLOR      0.0f, 0.5f, 0.0f, 1.0f
-#define RED_COLOR 1.0f, 0.0f, 0.0f, 1.0f
-#define GREY_COLOR 0.8f, 0.8f, 0.8f, 1.0f
-#define BROWN_COLOR 0.5f, 0.5f, 0.0f, 1.0f
 
   std::vector<float> vPosNorm = smd.m_vVertices;
   vPosNorm.insert( vPosNorm.end(), smd.m_vNormals.begin(), smd.m_vNormals.end() );

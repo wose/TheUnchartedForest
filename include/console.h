@@ -8,6 +8,7 @@
 
 #include <string>
 #include <vector>
+#include <deque>
 #include <map>
 #include <functional>
 
@@ -28,6 +29,7 @@ class CConsole
   bool m_bGlow;
   bool m_bColoringMode;
 
+  const size_t m_nHistorySize = 1000;
   uint m_nWidth;
   uint m_nHeight;
   CSDFFont m_Font;
@@ -42,7 +44,8 @@ class CConsole
   std::string m_strColorCode;
 
   std::vector<std::string> m_vHistory;
-  std::vector<std::string> m_vOutput;
+  std::vector<std::string>::iterator m_itHistory;
+  std::deque<std::string> m_vOutput;
   std::vector<float> m_vVertexData;
 
   GLuint m_nVBO;
@@ -62,6 +65,7 @@ class CConsole
  public:
   void AddLine(const std::string& strLine);
   bool Backspace();
+  void Down();
   void Draw(CShader &shader, const uint nTime);
   bool Enter();
   void Invalidate();
@@ -69,6 +73,7 @@ class CConsole
   bool HandleText(const char cChar);
   void Toggle();
   void Resize(const uint nWidth, const uint nHeight);
+  void Up();
 };
 
 #endif

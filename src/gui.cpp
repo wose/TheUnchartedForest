@@ -70,6 +70,14 @@ bool CGUI::OnKeyDown(const SDL_Keycode nKeyCode)
       if(m_pConsole)
         return m_pConsole->Enter();
       break;
+    case SDLK_UP:
+      if(m_pConsole)
+        m_pConsole->Up();
+      return true;
+    case SDLK_DOWN:
+      if(m_pConsole)
+        m_pConsole->Down();
+      return true;
   }
 
   return false;
