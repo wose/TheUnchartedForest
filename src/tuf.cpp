@@ -333,10 +333,7 @@ void CTUF::UpdateFPS()
   if(SDL_GetTicks() - m_nTicks > 1000)
     {
       m_fFPS = (m_nFrames/(float)(SDL_GetTicks() - m_nTicks)) * 1000;
-      DLOG(INFO) << m_fFPS << " FPS";
-//      std::cout << "FPS: " << m_fFPS << std::endl;
-//      std::cout << "LastTicks: " << m_nLastTicks << std::endl;
-//      std::cout << "ElapsedSeconds:" << m_fElapsedSeconds << std::endl;
+      DLOG_EVERY_N(INFO, 10) << m_fFPS << " FPS";
 
       m_nFrames = 0;
       m_nTicks = SDL_GetTicks();

@@ -30,6 +30,7 @@ class CConsole
   bool m_bColoringMode;
 
   const size_t m_nHistorySize = 1000;
+  uint m_nOutputLines;
   uint m_nWidth;
   uint m_nHeight;
   CSDFFont m_Font;
@@ -46,6 +47,8 @@ class CConsole
   std::vector<std::string> m_vHistory;
   std::vector<std::string>::iterator m_itHistory;
   std::deque<std::string> m_vOutput;
+  int m_nLastOutputIndex;
+  std::deque<std::string>::iterator m_itOutputEnd;
   std::vector<float> m_vVertexData;
 
   GLuint m_nVBO;
@@ -64,16 +67,21 @@ class CConsole
 
  public:
   void AddLine(const std::string& strLine);
-  bool Backspace();
-  void Down();
   void Draw(CShader &shader, const uint nTime);
-  bool Enter();
   void Invalidate();
   bool IsVisible() const { return m_bVisible; }
   bool HandleText(const char cChar);
   void Toggle();
   void Resize(const uint nWidth, const uint nHeight);
+
+  // key handler
+  bool Enter();
+  bool Backspace();
+
   void Up();
+  void Down();
+  void PageUp();
+  void PageDown();
 };
 
 #endif

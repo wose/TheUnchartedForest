@@ -159,6 +159,9 @@ void CConsole::AddLine(const std::string& strLine)
   m_vOutput.push_back(strLine);
     if(m_vOutput.size() > m_nHistorySize)
       m_vOutput.pop_front();
+  m_itOutputEnd = m_vOutput.end();
+  m_nLastOutputIndex = m_vOutput.size();
+
   Invalidate();
 }
 
@@ -195,12 +198,13 @@ void CConsole::Invalidate()
 
   m_fCursorX = 16.0;
   m_fCursorY = 20.0;
-  int nOutputLines = (m_nHeight - 40) / 20;
+  uint nOutputLines = (m_nHeight - 40) / 20;
+  m_nOutputLines = nOutputLines;
 
   auto it = m_vOutput.size() >= nOutputLines ?
-            m_vOutput.end() - nOutputLines : m_vOutput.begin();
+            m_itOutputEnd - nOutputLines : m_vOutput.begin();
 
-  for(; it != m_vOutput.end(); ++it)
+  for(; it != m_itOutputEnd; ++it)
     {
       m_vCurrentFontColor = glm::vec3(m_vFontColor);
       for(char &c : *it)
@@ -274,9 +278,11 @@ bool CConsole::Enter()
         m_vOutput.pop_front();
       m_strCommand.clear();
       m_strCommand = "";
-      Invalidate();
 
       m_itHistory = m_vHistory.end();
+      m_itOutputEnd = m_vOutput.end();
+      m_nLastOutputIndex = m_vOutput.size();
+      Invalidate();
 
       return true;
     }
@@ -326,16 +332,6 @@ void CConsole::Toggle()
   m_bVisible = !m_bVisible;
 }
 
-void CConsole::Down()
-{
-  if(m_itHistory != --m_vHistory.end())
-  {
-    m_itHistory++;
-    m_strCommand = *m_itHistory;
-    Invalidate();
-  }
-}
-
 void CConsole::Up()
 {
   if(m_itHistory != m_vHistory.begin())
@@ -344,4 +340,53 @@ void CConsole::Up()
     m_strCommand = *m_itHistory;
     Invalidate();
   }
+}
+
+void CConsole::Down()
+{
+  if(m_itHistory != --m_vHistory.end() && m_itHistory != m_vHistory.end())
+  {
+    m_itHistory++;
+    m_strCommand = *m_itHistory;
+    Invalidate();
+  }
+}
+
+void CConsole::PageUp()
+{
+  if(m_vOutput.size() > m_nOutputLines)
+  {
+    if(m_nLastOutputIndex - m_nOutputLines <= m_nOutputLines)
+    {
+      m_itOutputEnd = m_vOutput.begin() + m_nOutputLines;
+    }
+    else
+    {
+      m_nLastOutputIndex -=  m_nOutputLines;
+      m_itOutputEnd = m_vOutput.begin() + m_nLastOutputIndex;
+    }
+  }
+  else
+  {
+    m_itOutputEnd = m_vOutput.end();
+  }
+
+  Invalidate();
+}
+
+void CConsole::PageDown()
+{
+  if(m_vOutput.size() > m_nOutputLines &&
+    m_nLastOutputIndex + m_nOutputLines < m_vOutput.size())
+  {
+    m_nLastOutputIndex += m_nOutputLines;
+    m_itOutputEnd = m_vOutput.begin() + m_nLastOutputIndex;
+  }
+  else
+  {
+    m_itOutputEnd = m_vOutput.end();
+    m_nLastOutputIndex = m_vOutput.size();
+  }
+
+  Invalidate();
 }

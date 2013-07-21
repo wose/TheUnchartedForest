@@ -74,10 +74,22 @@ bool CGUI::OnKeyDown(const SDL_Keycode nKeyCode)
       if(m_pConsole)
         m_pConsole->Up();
       return true;
+      break;
     case SDLK_DOWN:
       if(m_pConsole)
         m_pConsole->Down();
       return true;
+      break;
+    case SDLK_PAGEUP:
+      if(m_pConsole)
+        m_pConsole->PageUp();
+      return true;
+      break;
+    case SDLK_PAGEDOWN:
+      if(m_pConsole)
+        m_pConsole->PageDown();
+      return true;
+      break;
   }
 
   return false;
